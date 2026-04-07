@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Neue Haas Grotesk ── */
+@font-face {
+  font-family: 'Neue Haas Grotesk';
+  src: url('https://freight.cargo.site/w/1200/i/56d02901905813936443e061a490e599b06821360098f987d15777f9e8a786e1/NeueHaasGroteskText-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Haas Grotesk';
+  src: url('https://freight.cargo.site/w/1200/i/5c4e974e4e318535069279401f11e938e55546d123b363a0a3233b3d58a2f1c8/NeueHaasGroteskText-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Haas Grotesk';
+  src: url('https://freight.cargo.site/w/1200/i/521a0f529f796a56c4d7b27e85e1b21332a677461460c3896565011933c09b43/NeueHaasGroteskText-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+  COLOR PALETTE — matched to the Spline boxes model
+  ─────────────────────────────────────────────────
+  Cyan    #06B6D4  (teal boxes, left edge)
+  Indigo  #6366F1  (mid boxes, primary accent)
+  Violet  #8B5CF6  (purple boxes, right edge)
+  Deep    #4F46E5  (darker indigo for hover states)
+*/
+
+@layer base {
+  :root {
+    --background:          0 0% 0%;
+    --foreground:          0 0% 98%;
+    --surface:             0 0% 4%;
+    --surface-elevated:    0 0% 6%;
+    --muted:               0 0% 7%;
+    --muted-foreground:    240 5% 65%;
+    --border:              0 0% 10%;
+    --primary:             239 84% 67%;     /* indigo #6366F1 */
+    --primary-foreground:  0 0% 100%;
+    --secondary:           0 0% 7%;
+    --secondary-foreground:0 0% 98%;
+    --accent:              0 0% 7%;
+    --accent-foreground:   0 0% 98%;
+    --radius:              0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-black text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  /* Noise grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+}
+
+@layer components {
+  /* ── Glass morphism card ── */
+  .glass {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-indigo {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+  }
+
+  /* ── Gradient text — cyan → violet (matches the boxes gradient) ── */
+  .gradient-text {
+    background: linear-gradient(135deg, #22D3EE 0%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-subtle {
+    background: linear-gradient(135deg, #FAFAFA 30%, #A1A1AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Same gradient, indigo-biased variant (for terminal sections) */
+  .gradient-text-blue {
+    background: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Border glow — indigo ── */
+  .border-glow {
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    box-shadow: 0 0 0 1px rgba(99,102,241,0.08), inset 0 0 20px rgba(99,102,241,0.02);
+  }
+  .border-glow:hover {
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 0 0 1px rgba(99,102,241,0.15), inset 0 0 20px rgba(99,102,241,0.04);
+  }
+
+  /* ── Gradient border (featured card) — cyan→violet ── */
+  .gradient-border {
+    position: relative;
+    background: #000000;
+    border-radius: 1.25rem;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(6,182,212,0.6), rgba(99,102,241,0.4) 50%, rgba(139,92,246,0.6));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ── Primary button — indigo → violet ── */
+  .btn-gold {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.2);
+  }
+  .btn-gold:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(99,102,241,0.35), 0 0 0 1px rgba(139,92,246,0.3);
+    filter: brightness(1.08);
+  }
+  .btn-gold:active {
+    transform: translateY(0);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #A1A1AA;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: all 0.15s ease;
+  }
+  .btn-outline:hover {
+    border-color: rgba(99,102,241,0.4);
+    color: #FAFAFA;
+    background: rgba(99,102,241,0.06);
+  }
+
+  /* ── Section container ── */
+  .section-container {
+    @apply max-w-6xl mx-auto px-6 lg:px-8;
+  }
+
+  /* ── Eyebrow label — indigo ── */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #818CF8;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.22);
+  }
+
+  /* ── Eyebrow cyan variant ── */
+  .eyebrow-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #22D3EE;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(6,182,212,0.08);
+    border: 1px solid rgba(6,182,212,0.22);
+  }
+
+  /* ── Bento card ── */
+  .bento-card {
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 1.25rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    overflow: hidden;
+  }
+  .bento-card:hover {
+    border-color: rgba(99,102,241,0.2);
+    background: #03020a;
+  }
+
+  /* ── Image placeholder ── */
+  .img-placeholder {
+    position: relative;
+    overflow: hidden;
+    background: #05040f;
+    border: 1px dashed rgba(99,102,241,0.15);
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Ticker wrapper ── */
+  .ticker-wrap {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+
+  /* ── Page transition ── */
+  .page-enter {
+    animation: fade-up 0.4s ease-out forwards;
+  }
+
+  /* ── Section divider fade ── */
+  .section-fade-top {
+    background: linear-gradient(to bottom, #000000, transparent);
+    pointer-events: none;
+  }
+  .section-fade-bottom {
+    background: linear-gradient(to top, #000000, transparent);
+    pointer-events: none;
+  }
+
+  /* ── Feature alternating rows ── */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  @media (max-width: 768px) {
+    .feature-row {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* ── Comparison table ── */
+  .compare-table th,
+  .compare-table td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    text-align: left;
+  }
+  .compare-table tr:last-child td {
+    border-bottom: none;
+  }
+  .compare-col-highlight {
+    background: rgba(99,102,241,0.05);
+  }
+
+  /* ── Custom scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e1b4b;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #312e81;
+  }
+}
