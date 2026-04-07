@@ -15,7 +15,7 @@ const fadeUp = {
 function FeatureCheck({ text }) {
   return (
     <li className="flex items-start gap-2.5 text-sm text-[#A1A1AA]">
-      <CheckCircle2 size={15} className="text-[#6366F1] flex-shrink-0 mt-0.5" />
+      <CheckCircle2 size={15} className="text-[#c9a84c] flex-shrink-0 mt-0.5" />
       {text}
     </li>
   )
@@ -40,7 +40,7 @@ export default function FeaturesSection() {
           <span className="eyebrow mb-4 block w-fit">Why Choose TradeNet?</span>
           <h2 className="text-[clamp(32px,4vw,52px)] font-black tracking-[-0.03em] text-[#FAFAFA] max-w-xl leading-[1.08]">
             Everything serious traders need,<br />
-            <span className="gradient-text">in one system.</span>
+            <span className="gradient-text-gold">in one system.</span>
           </h2>
         </motion.div>
 
@@ -58,18 +58,18 @@ export default function FeaturesSection() {
             {/* Accent gradient */}
             <div
               className="absolute top-0 right-0 w-64 h-64 opacity-10 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #6366F1, transparent 70%)', filter: 'blur(40px)' }}
+              style={{ background: 'radial-gradient(circle, #c9a84c, transparent 70%)', filter: 'blur(40px)' }}
             />
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#6366F1] bg-[#6366F1]/10 border border-[#6366F1]/20 px-2.5 py-1 rounded-full mb-3">
+                <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#c9a84c] bg-[#c9a84c]/10 border border-[#c9a84c]/20 px-2.5 py-1 rounded-full mb-3">
                   Flagship
                 </div>
                 <h3 className="text-xl font-bold text-[#FAFAFA] leading-tight">Fusion AI-Driven Indicator</h3>
               </div>
               <button
                 onClick={() => navigate('/indicator')}
-                className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold text-[#6366F1] hover:text-[#6366F1]/80 transition-colors group"
+                className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold text-[#c9a84c] hover:text-[#c9a84c]/80 transition-colors group"
               >
                 Learn more
                 <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
@@ -119,10 +119,10 @@ export default function FeaturesSection() {
           >
             <div
               className="absolute bottom-0 left-0 w-48 h-48 opacity-[0.06] pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #06B6D4, transparent 70%)', filter: 'blur(40px)' }}
+              style={{ background: 'radial-gradient(circle, #c9a84c, transparent 70%)', filter: 'blur(40px)' }}
             />
-            <div className="w-10 h-10 rounded-xl bg-[#6366F1]/10 border border-[#6366F1]/20 flex items-center justify-center">
-              <TrendingUp size={18} className="text-[#6366F1]" />
+            <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center">
+              <TrendingUp size={18} className="text-[#c9a84c]" />
             </div>
             <h3 className="text-lg font-bold text-[#FAFAFA] leading-tight">
               We Don't Just Give Signals — We Teach You How to Trade

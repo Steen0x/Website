@@ -81,7 +81,7 @@ export default function IndicatorPage() {
           <div className="absolute inset-0 bg-black/85" />
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(99,102,241,0.06), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(201,168,76,0.06), transparent)' }}
           />
 
           <div className="relative section-container py-24">
@@ -95,7 +95,7 @@ export default function IndicatorPage() {
                 <span className="eyebrow">Proprietary Indicator Suite</span>
                 <h1 className="text-[clamp(36px,5vw,64px)] font-black tracking-[-0.04em] leading-[1.03]">
                   <span className="text-[#FAFAFA]">Fusion v2 Indicator</span><br />
-                  <span className="gradient-text">Plug N' Play Profitability.</span>
+                  <span className="gradient-text-gold">Plug N' Play Profitability.</span>
                 </h1>
                 <p className="text-[17px] text-[#A1A1AA] max-w-xl mx-auto leading-[1.75]">
                   Our exclusive TradingView indicator is trusted by real traders every day — not for signals that look
@@ -106,7 +106,7 @@ export default function IndicatorPage() {
                 <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06] max-w-sm mx-auto mt-8">
                   {stats.map(({ value, label }) => (
                     <div key={label} className="flex flex-col items-center gap-1 py-4 bg-black">
-                      <span className="text-2xl font-black tracking-tight gradient-text">{value}</span>
+                      <span className="text-2xl font-black tracking-tight gradient-text-gold">{value}</span>
                       <span className="text-xs text-[#71717A] text-center leading-tight">{label}</span>
                     </div>
                   ))}
@@ -151,7 +151,7 @@ export default function IndicatorPage() {
                   <button
                     key={i}
                     onClick={() => setActive(i)}
-                    className={`rounded-full transition-all ${i === active ? 'w-6 h-1.5 bg-[#6366F1]' : 'w-1.5 h-1.5 bg-white/20'}`}
+                    className={`rounded-full transition-all ${i === active ? 'w-6 h-1.5 bg-[#c9a84c]' : 'w-1.5 h-1.5 bg-white/20'}`}
                   />
                 ))}
               </div>
@@ -176,7 +176,7 @@ export default function IndicatorPage() {
                   <span className="text-5xl font-black text-[#FAFAFA] tracking-tight">$79</span>
                   <div className="pb-1">
                     <p className="text-sm text-[#71717A] line-through">was $279</p>
-                    <p className="text-sm font-bold text-[#6366F1]">71% OFF</p>
+                    <p className="text-sm font-bold text-[#c9a84c]">71% OFF</p>
                   </div>
                 </div>
                 <p className="text-[15px] text-[#A1A1AA] leading-relaxed">
@@ -192,7 +192,7 @@ export default function IndicatorPage() {
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   {trustBadges.map(({ icon: Icon, label }) => (
                     <div key={label} className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                      <Icon size={16} className="text-[#6366F1]" />
+                      <Icon size={16} className="text-[#c9a84c]" />
                       <span className="text-[11px] text-[#71717A] text-center leading-tight">{label}</span>
                     </div>
                   ))}
@@ -206,11 +206,11 @@ export default function IndicatorPage() {
         <section className="py-20 border-t border-white/[0.06] relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(99,102,241,0.04), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(201,168,76,0.04), transparent)' }}
           />
           <div className="section-container text-center relative space-y-6">
             <h2 className="text-[clamp(28px,4vw,48px)] font-black tracking-[-0.03em]">
-              <span className="gradient-text">Ready to Trade with Confidence?</span>
+              <span className="gradient-text-gold">Ready to Trade with Confidence?</span>
             </h2>
             <button
               onClick={() => { window.location.href = '/#pricing' }}
@@ -221,7 +221,7 @@ export default function IndicatorPage() {
             <div className="flex flex-wrap justify-center gap-4">
               {trustBadges.map(({ icon: Icon, label }) => (
                 <div key={label} className="flex items-center gap-2 text-sm text-[#71717A]">
-                  <Icon size={14} className="text-[#6366F1]" /> {label}
+                  <Icon size={14} className="text-[#c9a84c]" /> {label}
                 </div>
               ))}
             </div>

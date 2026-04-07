@@ -67,7 +67,7 @@ export default function FreeGuidePopup() {
                     <p className="text-sm text-[#A1A1AA] leading-relaxed">
                       90 pages of everything you need to trade crypto futures profitably. Completely free.
                     </p>
-                    <p className="text-xs text-[#6366F1] mt-2 font-semibold">⚡ 12 spots left</p>
+                    <p className="text-xs text-[#c9a84c] mt-2 font-semibold">⚡ 12 spots left</p>
                   </div>
                   <a
                     href="https://whop.com/checkout/plan_vpZI2qjyG8yxs?d2c=true"

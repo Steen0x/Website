@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import ScrollIndicator from '@/components/common/ScrollIndicator'
+import LiquidationHeatmap from '@/components/common/LiquidationHeatmap'
 
 const stats = [
-  { value: '1K+',  label: 'Members'          },
-  { value: '96%',  label: 'Positive Feedback' },
-  { value: '24/7', label: 'Support'           },
-  { value: '4',    label: 'Exchanges'         },
+  { value: 'Multi',      label: 'Exchange'           },
+  { value: '3,000+',     label: 'Symbols'            },
+  { value: 'Real-Time',  label: 'Prediction'        },
+  { value: 'Native',     label: 'Desktop'           },
 ]
 
 const fadeUp = {
@@ -30,44 +31,26 @@ export default function HeroSection() {
       className="relative min-h-screen flex flex-col bg-black overflow-hidden"
       style={{ isolation: 'isolate' }}
     >
-      {/* ── Spline 3D — iframe embed, full-section background ── */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{ zIndex: 0 }}
-      >
-        <iframe
-          src="https://my.spline.design/boxeshover-yHbiGykrETBxjS5SEJcWWpWc/"
-          width="100%"
-          height="100%"
-          title="Spline 3D Scene"
-          style={{ display: 'block', width: '100%', height: '100%', border: 'none' }}
-        />
-      </div>
+      {/* ── Liquidation heatmap background ── */}
+      <LiquidationHeatmap />
 
-      {/* ── Gradient overlays — pointer-events-none ── */}
-      {/* Left fade for text legibility on desktop */}
+      {/* ── Gradient overlays for text legibility ── */}
       <div
-        className="absolute inset-0 hidden md:block"
+        className="absolute inset-0 hidden md:block pointer-events-none"
         style={{
           zIndex: 1,
-          pointerEvents: 'none',
           background:
-            'linear-gradient(to right, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)',
+            'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.05) 75%)',
         }}
       />
-      {/* Mobile — full vignette */}
       <div
-        className="absolute inset-0 md:hidden"
-        style={{
-          zIndex: 1,
-          pointerEvents: 'none',
-          background: 'rgba(0,0,0,0.70)',
-        }}
+        className="absolute inset-0 md:hidden pointer-events-none"
+        style={{ zIndex: 1, background: 'rgba(0,0,0,0.6)' }}
       />
       {/* Bottom fade into next section */}
       <div
-        className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-black to-transparent"
-        style={{ zIndex: 1, pointerEvents: 'none' }}
+        className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-black to-transparent pointer-events-none"
+        style={{ zIndex: 1 }}
       />
 
       {/* ── Content — left column, pointer-events-none wrapper ── */}
@@ -80,9 +63,9 @@ export default function HeroSection() {
 
             {/* Eyebrow */}
             <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible">
-              <span className="eyebrow">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" />
-                The same systems we trade with — and traders who know how to use them
+              <span className="eyebrow-gold">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />
+                The Only Terminal With Real-Time Liquidation Prediction
               </span>
             </motion.div>
 
@@ -95,10 +78,10 @@ export default function HeroSection() {
               animate="visible"
             >
               <h1 className="text-[clamp(40px,5.5vw,72px)] font-black leading-[1.01] tracking-[-0.04em] text-[#FAFAFA]">
-                Most Traders Lose.
+                See What the Market
               </h1>
-              <h1 className="text-[clamp(40px,5.5vw,72px)] font-black leading-[1.01] tracking-[-0.04em] gradient-text">
-                We Built a System<br />That Doesn't.
+              <h1 className="text-[clamp(40px,5.5vw,72px)] font-black leading-[1.01] tracking-[-0.04em] gradient-text-gold">
+                Is About to Do.
               </h1>
             </motion.div>
 
@@ -110,9 +93,10 @@ export default function HeroSection() {
               animate="visible"
               className="text-[17px] text-[#A1A1AA] leading-[1.75] max-w-[440px]"
             >
-              From institutional-grade education and the Fusion AI Indicator to our new
-              Quantum Terminal — TradeNet hands you the exact tools top traders use to
-              scale P&L.
+              TradeNet Terminal delivers real-time liquidation prediction,
+              aggregated order flow, and multi-exchange derivatives analytics
+              in a GPU-accelerated native desktop terminal.
+              Built for traders who trade differently.
             </motion.p>
 
             {/* CTAs — pointer-events-auto */}
@@ -126,16 +110,16 @@ export default function HeroSection() {
             >
               <button
                 onClick={() => navigate('/terminal')}
-                className="inline-flex items-center gap-2 bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold px-6 py-3 rounded-xl text-[15px] transition-colors"
+                className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold px-6 py-3 rounded-xl text-[15px] transition-colors shadow-[0_0_20px_rgba(201,168,76,0.15)]"
               >
-                Join Terminal Waitlist
+                Join the Waitlist
                 <ArrowRight size={16} />
               </button>
               <button
                 onClick={scrollToPricing}
                 className="btn-outline inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[15px]"
               >
-                See Plans
+                See It In Action
               </button>
             </motion.div>
 
@@ -150,9 +134,9 @@ export default function HeroSection() {
               {stats.map(({ value, label }) => (
                 <div
                   key={label}
-                  className="flex flex-col items-center gap-1 py-4 px-2 bg-black/80 backdrop-blur-sm"
+                  className="flex flex-col items-center justify-center gap-1 py-4 px-2 bg-black/80 backdrop-blur-sm"
                 >
-                  <span className="text-xl font-black tracking-tight gradient-text">{value}</span>
+                  <span className="text-base font-black tracking-tight gradient-text-gold text-center leading-tight">{value}</span>
                   <span className="text-[10px] text-[#71717A] text-center leading-tight">{label}</span>
                 </div>
               ))}

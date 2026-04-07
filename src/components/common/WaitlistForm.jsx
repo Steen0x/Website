@@ -39,11 +39,11 @@ export default function WaitlistForm({ className = '' }) {
           value={email}
           onChange={e => { setEmail(e.target.value); setError('') }}
           placeholder="your@email.com"
-          className="flex-1 min-w-0 bg-black border border-white/[0.08] text-[#FAFAFA] placeholder-[#3F3F46] text-sm rounded-xl px-4 py-3 outline-none focus:border-[#06B6D4]/40 transition-colors"
+          className="flex-1 min-w-0 bg-black border border-white/[0.08] text-[#FAFAFA] placeholder-[#3F3F46] text-sm rounded-xl px-4 py-3 outline-none focus:border-[#c9a84c]/40 transition-colors"
         />
         <button
           type="submit"
-          className="flex-shrink-0 flex items-center gap-2 bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
+          className="flex-shrink-0 flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
         >
           Join Waitlist
           <ArrowRight size={14} />

@@ -56,13 +56,13 @@ export default function SplineAccentSection() {
             style={{ pointerEvents: 'none' }}
           >
             <span className="eyebrow">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />
               Community & Education
             </span>
 
             <h2 className="text-[clamp(30px,4vw,52px)] font-black tracking-[-0.03em] leading-[1.08]">
               <span className="text-[#FAFAFA]">We Don't Just Give</span><br />
-              <span className="gradient-text">Signals. We Build</span><br />
+              <span className="gradient-text-gold">Signals. We Build</span><br />
               <span className="text-[#FAFAFA]">Real Traders.</span>
             </h2>
 
@@ -83,7 +83,7 @@ export default function SplineAccentSection() {
                   key={item}
                   className="flex items-center gap-3 text-sm text-[#A1A1AA]"
                 >
-                  <span className="w-1 h-1 rounded-full bg-[#6366F1] flex-shrink-0" />
+                  <span className="w-1 h-1 rounded-full bg-[#c9a84c] flex-shrink-0" />
                   {item}
                 </li>
               ))}

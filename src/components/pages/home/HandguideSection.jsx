@@ -20,15 +20,15 @@ export default function HandguideSection() {
             <span className="eyebrow">Free & Exclusive Guide</span>
             <h2 className="text-[clamp(28px,3.5vw,44px)] font-black tracking-[-0.03em] leading-[1.1]">
               <span className="text-[#FAFAFA]">Your Ultimate</span><br />
-              <span className="gradient-text">Crypto Futures Handguide</span>
+              <span className="gradient-text-gold">Crypto Futures Handguide</span>
             </h2>
             <p className="text-[16px] text-[#A1A1AA] leading-[1.75] max-w-md">
               Our super-solid 90-page handguide contains literally everything you need to know about how to trade crypto
               futures. Written by traders, for traders — no fluff, no filler.
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#6366F1]/10 border border-[#6366F1]/20 flex items-center justify-center">
-                <BookOpen size={15} className="text-[#6366F1]" />
+              <div className="w-8 h-8 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center">
+                <BookOpen size={15} className="text-[#c9a84c]" />
               </div>
               <span className="text-sm text-[#A1A1AA]">90 pages of institutional-grade education</span>
             </div>
@@ -51,7 +51,7 @@ export default function HandguideSection() {
             <div className="relative">
               <div
                 className="absolute inset-0 opacity-30 pointer-events-none"
-                style={{ background: 'radial-gradient(circle, #6366F1, transparent 60%)', filter: 'blur(50px)' }}
+                style={{ background: 'radial-gradient(circle, #c9a84c, transparent 60%)', filter: 'blur(50px)' }}
               />
               <img
                 src="https://storage.googleapis.com/hostinger-horizons-assets-prod/3d810307-bbc4-4f21-91d6-f292df1a885d/332a3dbc236387758b1e6b6fd0211701.png"

@@ -89,7 +89,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={handleWaitlist}
-              className="flex items-center gap-2 bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold text-sm px-5 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2 rounded-lg transition-colors"
             >
               Join Waitlist
             </button>
@@ -133,7 +133,7 @@ export default function Header() {
               <div className="pt-2 border-t border-white/[0.06] mt-2">
                 <button
                   onClick={handleWaitlist}
-                  className="w-full bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
+                  className="w-full bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
                 >
                   Join Waitlist
                 </button>

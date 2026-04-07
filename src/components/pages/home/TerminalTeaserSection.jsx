@@ -17,17 +17,17 @@ const highlights = [
     icon:   Layers,
     title:  '4 Exchanges, 1 View',
     body:   'Aggregated orderflow from Binance, Bybit, OKX, and Hyperliquid in one footprint chart.',
-    accent: '#06B6D4',
-    bg:     'rgba(6,182,212,0.08)',
-    border: 'rgba(6,182,212,0.15)',
+    accent: '#c9a84c',
+    bg:     'rgba(201,168,76,0.08)',
+    border: 'rgba(201,168,76,0.15)',
   },
   {
     icon:   Target,
     title:  'Liquidation Prediction',
     body:   'Predict where liquidations will cluster — proprietary real-time algorithm.',
-    accent: '#6366F1',
-    bg:     'rgba(99,102,241,0.08)',
-    border: 'rgba(99,102,241,0.15)',
+    accent: '#c9a84c',
+    bg:     'rgba(201,168,76,0.08)',
+    border: 'rgba(201,168,76,0.15)',
   },
   {
     icon:   Zap,
@@ -61,7 +61,7 @@ export default function TerminalTeaserSection() {
       <div
         className="absolute top-0 right-0 w-[500px] h-[400px] opacity-[0.04] pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, #06B6D4, transparent 70%)',
+          background: 'radial-gradient(circle, #c9a84c, transparent 70%)',
           filter: 'blur(80px)',
         }}
       />
@@ -76,15 +76,15 @@ export default function TerminalTeaserSection() {
           animate={inView ? 'visible' : 'hidden'}
         >
           <div>
-            <span className="eyebrow-blue mb-4 block w-fit">New — Quantum Terminal</span>
+            <span className="eyebrow-gold mb-4 block w-fit">New — TradeNet Terminal</span>
             <h2 className="text-[clamp(28px,3.8vw,48px)] font-black tracking-[-0.03em] text-[#FAFAFA] leading-[1.08]">
               A trading terminal built<br />
-              <span className="gradient-text-blue">from the ground up.</span>
+              <span className="gradient-text-gold">from the ground up.</span>
             </h2>
           </div>
           <button
             onClick={() => navigate('/terminal')}
-            className="flex-shrink-0 inline-flex items-center gap-2 text-sm font-semibold text-[#06B6D4] hover:text-[#93C5FD] transition-colors group"
+            className="flex-shrink-0 inline-flex items-center gap-2 text-sm font-semibold text-[#c9a84c] hover:text-[#f0c040] transition-colors group"
           >
             See full details
             <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
@@ -102,7 +102,7 @@ export default function TerminalTeaserSection() {
             className="lg:row-span-2"
           >
             <ImagePlaceholder
-              label="Quantum Terminal"
+              label="TradeNet Terminal"
               aspectRatio="4/3"
               className="h-full min-h-[240px]"
             />
@@ -144,7 +144,7 @@ export default function TerminalTeaserSection() {
         >
           <button
             onClick={() => navigate('/terminal')}
-            className="inline-flex items-center gap-2 bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
           >
             Join the Waitlist
             <ArrowRight size={14} />

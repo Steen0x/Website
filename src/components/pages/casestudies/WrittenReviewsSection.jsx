@@ -43,7 +43,7 @@ function Stars({ count }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
-        <Star key={i} size={13} className="text-[#6366F1] fill-[#6366F1]" />
+        <Star key={i} size={13} className="text-[#c9a84c] fill-[#c9a84c]" />
       ))}
     </div>
   )

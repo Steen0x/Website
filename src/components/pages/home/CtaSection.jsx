@@ -15,10 +15,10 @@ export default function CtaSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(99,102,241,0.04), transparent 70%)',
+            'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.04), transparent 70%)',
         }}
       />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#6366F1]/15 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c9a84c]/15 to-transparent" />
 
       <div className="section-container relative">
         <motion.div
@@ -32,7 +32,7 @@ export default function CtaSection() {
             <span className="eyebrow">Community & Indicator</span>
             <h2 className="text-[clamp(24px,3vw,36px)] font-black tracking-[-0.03em] leading-[1.1]">
               <span className="text-[#FAFAFA]">Ready to Elevate</span><br />
-              <span className="gradient-text">Your Trading?</span>
+              <span className="gradient-text-gold">Your Trading?</span>
             </h2>
             <p className="text-[15px] text-[#A1A1AA]">
               Join 1,000+ traders already using TradeNet to find consistent,
@@ -58,20 +58,20 @@ export default function CtaSection() {
           {/* Terminal CTA */}
           <div
             className="bento-card p-8 space-y-5 relative overflow-hidden"
-            style={{ borderColor: 'rgba(6,182,212,0.18)' }}
+            style={{ borderColor: 'rgba(201,168,76,0.18)' }}
           >
             {/* Blue ambient */}
             <div
               className="absolute top-0 right-0 w-48 h-48 opacity-[0.08] pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, #06B6D4, transparent 70%)',
+                background: 'radial-gradient(circle, #c9a84c, transparent 70%)',
                 filter: 'blur(40px)',
               }}
             />
-            <span className="eyebrow-blue relative">Quantum Terminal</span>
+            <span className="eyebrow-gold relative">Quantum Terminal</span>
             <h2 className="text-[clamp(24px,3vw,36px)] font-black tracking-[-0.03em] leading-[1.1] relative">
               <span className="text-[#FAFAFA]">Professional Orderflow.</span><br />
-              <span className="gradient-text-blue">Every Exchange.</span>
+              <span className="gradient-text-gold">Every Exchange.</span>
             </h2>
             <p className="text-[15px] text-[#A1A1AA] relative">
               Multi-exchange aggregation, liquidation prediction, and GPU-accelerated
@@ -80,7 +80,7 @@ export default function CtaSection() {
             <div className="relative">
               <button
                 onClick={() => navigate('/terminal')}
-                className="inline-flex items-center gap-2 bg-[#06B6D4] hover:bg-[#0891B2] text-white font-semibold text-[14px] px-6 py-3 rounded-xl transition-colors"
+                className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-[14px] px-6 py-3 rounded-xl transition-colors"
               >
                 Join Terminal Waitlist
                 <ArrowRight size={15} />
