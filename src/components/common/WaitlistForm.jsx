@@ -1,22 +1,38 @@
 import { useState } from 'react'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
-export default function WaitlistForm({ className = '' }) {
+export default function WaitlistForm({ className = '', source = 'website' }) {
   const [email, setEmail]       = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    const trimmed = email.trim().toLowerCase()
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
     if (!isValid) {
       setError('Please enter a valid email address.')
       return
     }
-    console.log('Waitlist signup:', email.trim())
+
+    setLoading(true)
+    setError('')
+
+    const { error: dbError } = await supabase
+      .from('waitlist')
+      .upsert({ email: trimmed, source }, { onConflict: 'email' })
+
+    setLoading(false)
+
+    if (dbError) {
+      setError('Something went wrong. Please try again.')
+      return
+    }
+
     setSubmitted(true)
     setEmail('')
-    setError('')
   }
 
   if (submitted) {
@@ -40,13 +56,15 @@ export default function WaitlistForm({ className = '' }) {
           onChange={e => { setEmail(e.target.value); setError('') }}
           placeholder="your@email.com"
           className="flex-1 min-w-0 bg-black border border-white/[0.08] text-[#FAFAFA] placeholder-[#3F3F46] text-sm rounded-xl px-4 py-3 outline-none focus:border-[#c9a84c]/40 transition-colors"
+          disabled={loading}
         />
         <button
           type="submit"
-          className="flex-shrink-0 flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
+          disabled={loading}
+          className="flex-shrink-0 flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-3 rounded-xl transition-colors disabled:opacity-50"
         >
-          Join Waitlist
-          <ArrowRight size={14} />
+          {loading ? 'Joining...' : 'Join Waitlist'}
+          {!loading && <ArrowRight size={14} />}
         </button>
       </form>
       {error && <p className="text-xs text-red-400 mt-2">{error}</p>}

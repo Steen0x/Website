@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, User, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/contexts/AuthContext'
 
 const navLinks = [
   { label: 'Home',      to: '/'           },
@@ -16,6 +17,7 @@ export default function Header() {
   const [open, setOpen]         = useState(false)
   const location  = useLocation()
   const navigate  = useNavigate()
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -87,12 +89,38 @@ export default function Header() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={handleWaitlist}
-              className="flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2 rounded-lg transition-colors"
-            >
-              Join Waitlist
-            </button>
+            {user ? (
+              <>
+                <button
+                  onClick={() => navigate('/account')}
+                  className="flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
+                >
+                  <User size={15} />
+                  Account
+                </button>
+                <button
+                  onClick={async () => { await signOut(); navigate('/') }}
+                  className="flex items-center gap-1.5 text-sm text-[#71717A] hover:text-red-400 transition-colors"
+                >
+                  <LogOut size={14} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={handleWaitlist}
+                  className="flex items-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2 rounded-lg transition-colors"
+                >
+                  Join Waitlist
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -130,13 +158,38 @@ export default function Header() {
                   {link.label}
                 </button>
               ))}
-              <div className="pt-2 border-t border-white/[0.06] mt-2">
-                <button
-                  onClick={handleWaitlist}
-                  className="w-full bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
-                >
-                  Join Waitlist
-                </button>
+              <div className="pt-2 border-t border-white/[0.06] mt-2 space-y-2">
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => navigate('/account')}
+                      className="w-full flex items-center justify-center gap-2 bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
+                    >
+                      <User size={15} /> Account
+                    </button>
+                    <button
+                      onClick={async () => { await signOut(); navigate('/') }}
+                      className="w-full text-sm text-[#71717A] hover:text-red-400 transition-colors py-2"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="w-full text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors py-2"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={handleWaitlist}
+                      className="w-full bg-[#c9a84c] hover:bg-[#f0c040] text-black font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
+                    >
+                      Join Waitlist
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
