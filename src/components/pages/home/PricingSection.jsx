@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { CheckCircle2, Lock } from 'lucide-react'
 
@@ -45,6 +46,12 @@ const freeFeatures = [
 export default function PricingSection() {
   const ref    = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
+  const navigate = useNavigate()
+
+  function goToWaitlist() {
+    navigate('/terminal')
+    setTimeout(() => document.getElementById('terminal-waitlist')?.scrollIntoView({ behavior: 'smooth' }), 350)
+  }
 
   return (
     <section id="pricing" className="py-28 bg-black relative overflow-hidden" ref={ref}>
@@ -102,7 +109,7 @@ export default function PricingSection() {
                 Free access is powered by our exchange partnership. Sign up to Bitunix through our link — no deposit required.
               </p>
               <button
-                onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={goToWaitlist}
                 className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block w-full"
               >
                 Join Waitlist
@@ -171,7 +178,7 @@ export default function PricingSection() {
                   {proFeatures.map((f) => <Check key={f} text={f} gold />)}
                 </ul>
                 <button
-                  onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={goToWaitlist}
                   className="btn-gold text-center text-[14px] px-5 py-3 rounded-xl font-bold mt-auto w-full"
                 >
                   Join Waitlist
@@ -206,7 +213,7 @@ export default function PricingSection() {
                 {proFeatures.map((f) => <Check key={f} text={f} />)}
               </ul>
               <button
-                onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={goToWaitlist}
                 className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block w-full"
               >
                 Join Waitlist
