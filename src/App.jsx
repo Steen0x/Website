@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Analytics } from '@vercel/analytics/react'
 import Header             from '@/components/layout/Header'
 import Footer             from '@/components/layout/Footer'
 import FreeGuidePopup     from '@/components/common/FreeGuidePopup'
@@ -61,6 +62,7 @@ export default function App() {
         </Routes>
       </AnimatePresence>
       {showFooter && <Footer />}
+      <Analytics />
     </>
   )
 }
