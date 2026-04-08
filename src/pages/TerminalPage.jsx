@@ -22,17 +22,17 @@ const valueProps = [
     icon: Layers,
     title: '4 Exchanges, 1 View',
     body:  'Aggregated orderflow from Binance, Bybit, OKX, and Hyperliquid — unified into a single footprint chart. True price discovery.',
-    accent: '#06B6D4',
-    bg:     'rgba(6,182,212,0.08)',
-    border: 'rgba(6,182,212,0.18)',
+    accent: '#c9a84c',
+    bg:     'rgba(201,168,76,0.08)',
+    border: 'rgba(201,168,76,0.18)',
   },
   {
     icon: Target,
     title: 'Liquidation Prediction',
     body:  'Not just historical data — predict where liquidations will cluster before they happen. Proprietary server-side algorithm, real-time.',
-    accent: '#6366F1',
-    bg:     'rgba(99,102,241,0.08)',
-    border: 'rgba(99,102,241,0.18)',
+    accent: '#c9a84c',
+    bg:     'rgba(201,168,76,0.08)',
+    border: 'rgba(201,168,76,0.18)',
   },
   {
     icon: Zap,
@@ -204,7 +204,7 @@ function FeatureRow({ feature, index }) {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="eyebrow-blue">{eyebrow}</span>
+            <span className="eyebrow-gold">{eyebrow}</span>
             <h2 className="text-[clamp(26px,3.2vw,40px)] font-black tracking-[-0.03em] text-[#FAFAFA] leading-[1.1]">
               {title}
             </h2>
@@ -212,7 +212,7 @@ function FeatureRow({ feature, index }) {
             <ul className="space-y-2.5">
               {bullets.map((b) => (
                 <li key={b} className="flex items-start gap-2.5 text-sm text-[#A1A1AA]">
-                  <CheckCircle2 size={14} className="text-[#06B6D4] flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 size={14} className="text-[#c9a84c] flex-shrink-0 mt-0.5" />
                   {b}
                 </li>
               ))}
@@ -247,7 +247,7 @@ function TechSpecs() {
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
         >
-          <span className="eyebrow-blue mb-4 block w-fit">Under the Hood</span>
+          <span className="eyebrow-gold mb-4 block w-fit">Under the Hood</span>
           <h2 className="text-[clamp(28px,3.5vw,44px)] font-black tracking-[-0.03em] text-[#FAFAFA]">
             Zero-compromise architecture
           </h2>
@@ -287,7 +287,7 @@ function ComparisonTable() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.55 }}
         >
-          <span className="eyebrow-blue mb-4 block w-fit">How We Compare</span>
+          <span className="eyebrow-gold mb-4 block w-fit">How We Compare</span>
           <h2 className="text-[clamp(28px,3.5vw,44px)] font-black tracking-[-0.03em] text-[#FAFAFA]">
             The only terminal built for crypto.
           </h2>
@@ -306,7 +306,7 @@ function ComparisonTable() {
                   <th className="text-left px-6 py-4 text-xs font-semibold uppercase tracking-widest text-[#71717A]">
                     Feature
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-widest text-[#6366F1] compare-col-highlight">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-widest text-[#c9a84c] compare-col-highlight">
                     TradeNet
                   </th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-widest text-[#71717A]">
@@ -372,7 +372,7 @@ export default function TerminalPage() {
                 initial="hidden"
                 animate={heroInView ? 'visible' : 'hidden'}
               >
-                <span className="eyebrow-blue">v0.8.6 — Closed Beta</span>
+                <span className="eyebrow-gold">v0.8.6 — Closed Beta</span>
               </motion.div>
 
               <motion.div
@@ -385,7 +385,7 @@ export default function TerminalPage() {
                 <h1 className="text-[clamp(40px,5.5vw,72px)] font-black leading-[1.01] tracking-[-0.04em] text-[#FAFAFA]">
                   Professional Orderflow.<br />
                   Every Exchange.<br />
-                  <span className="gradient-text-blue">One Terminal.</span>
+                  <span className="gradient-text-gold">One Terminal.</span>
                 </h1>
               </motion.div>
 
@@ -419,13 +419,13 @@ export default function TerminalPage() {
                 className="grid grid-cols-4 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.05] max-w-md"
               >
                 {[
-                  { val: '4',    label: 'Exchanges' },
-                  { val: '3',    label: 'Assets' },
-                  { val: 'GPU',  label: 'Accelerated' },
-                  { val: '0',    label: 'Browser Overhead' },
+                  { val: 'Multi',     label: 'Exchange' },
+                  { val: '3,000+',    label: 'Symbols' },
+                  { val: 'Real-Time', label: 'Prediction' },
+                  { val: 'Native',    label: 'Desktop' },
                 ].map(({ val, label }) => (
-                  <div key={label} className="flex flex-col items-center gap-1 py-4 px-2 bg-[#0e0e10]">
-                    <span className="text-xl font-black tracking-tight text-[#FAFAFA]">{val}</span>
+                  <div key={label} className="flex flex-col items-center justify-center gap-1 py-4 px-2 bg-[#0e0e10]">
+                    <span className="text-base font-black tracking-tight gradient-text-gold text-center leading-tight">{val}</span>
                     <span className="text-[10px] text-[#71717A] text-center leading-tight">{label}</span>
                   </div>
                 ))}
@@ -472,17 +472,17 @@ export default function TerminalPage() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(6,182,212,0.05), transparent 70%)',
+              'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201,168,76,0.05), transparent 70%)',
           }}
         />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#06B6D4]/20 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c9a84c]/20 to-transparent" />
 
         <div className="section-container relative">
           <div className="max-w-xl">
-            <span className="eyebrow-blue mb-6 inline-block">Closed Beta</span>
+            <span className="eyebrow-gold mb-6 inline-block">Closed Beta</span>
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black tracking-[-0.035em] leading-[1.06] mb-5">
               <span className="text-[#FAFAFA]">Get early access to</span><br />
-              <span className="gradient-text-blue">Quantum Terminal</span>
+              <span className="gradient-text-gold">Quantum Terminal</span>
             </h2>
             <p className="text-[16px] text-[#A1A1AA] leading-[1.75] mb-8 max-w-md">
               We're onboarding a limited number of professional traders. Join the waitlist and
@@ -497,7 +497,7 @@ export default function TerminalPage() {
                 'Windows, macOS, and Linux builds',
               ].map((perk) => (
                 <li key={perk} className="flex items-center gap-2.5 text-sm text-[#A1A1AA]">
-                  <CheckCircle2 size={14} className="text-[#06B6D4] flex-shrink-0" />
+                  <CheckCircle2 size={14} className="text-[#c9a84c] flex-shrink-0" />
                   {perk}
                 </li>
               ))}

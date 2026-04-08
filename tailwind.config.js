@@ -27,9 +27,10 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        /* legacy aliases kept so any remaining refs don't break */
-        gold: '#6366F1',
-        'gold-dim': 'rgba(99,102,241,0.6)',
+        /* brand gold */
+        gold: '#c9a84c',
+        'gold-light': '#f0c040',
+        'gold-dim': 'rgba(201,168,76,0.6)',
         blue: '#06B6D4',
         /* new palette */
         indigo: '#6366F1',

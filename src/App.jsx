@@ -12,6 +12,9 @@ import ContactPage        from '@/pages/ContactPage'
 import CaseStudiesPage    from '@/pages/CaseStudiesPage'
 import TermsOfServicePage from '@/pages/TermsOfServicePage'
 import ThankYouPage       from '@/pages/ThankYouPage'
+import SignUpPage         from '@/pages/SignUpPage'
+import LoginPage          from '@/pages/LoginPage'
+import AccountPage        from '@/pages/AccountPage'
 
 const noHeaderRoutes = ['/indicator', '/terms-of-service', '/contact', '/thankyou']
 const noFooterRoutes = ['/thankyou']
@@ -51,6 +54,9 @@ export default function App() {
           <Route path="/case-studies"    element={<PageWrapper><CaseStudiesPage    /></PageWrapper>} />
           <Route path="/terms-of-service"element={<PageWrapper><TermsOfServicePage /></PageWrapper>} />
           <Route path="/thankyou"        element={<PageWrapper><ThankYouPage       /></PageWrapper>} />
+          <Route path="/signup"          element={<PageWrapper><SignUpPage         /></PageWrapper>} />
+          <Route path="/login"           element={<PageWrapper><LoginPage          /></PageWrapper>} />
+          <Route path="/account"         element={<PageWrapper><AccountPage        /></PageWrapper>} />
         </Routes>
       </AnimatePresence>
       {showFooter && <Footer />}

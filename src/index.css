@@ -89,11 +89,11 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .glass-indigo {
+  .glass-gold {
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(201, 168, 76, 0.25);
   }
 
   /* ── Gradient text — cyan → violet (matches the boxes gradient) ── */
@@ -111,6 +111,14 @@
     background-clip: text;
   }
 
+  /* ── Gradient text — gold ── */
+  .gradient-text-gold {
+    background: linear-gradient(135deg, #c9a84c 0%, #f0c040 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   /* Same gradient, indigo-biased variant (for terminal sections) */
   .gradient-text-blue {
     background: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
@@ -119,17 +127,17 @@
     background-clip: text;
   }
 
-  /* ── Border glow — indigo ── */
+  /* ── Border glow — gold ── */
   .border-glow {
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    box-shadow: 0 0 0 1px rgba(99,102,241,0.08), inset 0 0 20px rgba(99,102,241,0.02);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.08), inset 0 0 20px rgba(201,168,76,0.02);
   }
   .border-glow:hover {
-    border-color: rgba(99, 102, 241, 0.45);
-    box-shadow: 0 0 0 1px rgba(99,102,241,0.15), inset 0 0 20px rgba(99,102,241,0.04);
+    border-color: rgba(201, 168, 76, 0.45);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.15), inset 0 0 20px rgba(201,168,76,0.04);
   }
 
-  /* ── Gradient border (featured card) — cyan→violet ── */
+  /* ── Gradient border (featured card) — gold ── */
   .gradient-border {
     position: relative;
     background: #000000;
@@ -141,25 +149,26 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(6,182,212,0.6), rgba(99,102,241,0.4) 50%, rgba(139,92,246,0.6));
+    background: linear-gradient(135deg, rgba(201,168,76,0.6), rgba(240,192,64,0.4) 50%, rgba(201,168,76,0.6));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
 
-  /* ── Primary button — indigo → violet ── */
+  /* ── Primary button — gold ── */
   .btn-gold {
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
-    color: #ffffff;
+    background: #c9a84c;
+    color: #000000;
     font-weight: 700;
     letter-spacing: -0.01em;
     transition: all 0.15s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.2);
   }
   .btn-gold:hover {
+    background: #f0c040;
     transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(99,102,241,0.35), 0 0 0 1px rgba(139,92,246,0.3);
+    box-shadow: 0 4px 20px rgba(201,168,76,0.35), 0 0 0 1px rgba(240,192,64,0.3);
     filter: brightness(1.08);
   }
   .btn-gold:active {
@@ -175,9 +184,9 @@
     transition: all 0.15s ease;
   }
   .btn-outline:hover {
-    border-color: rgba(99,102,241,0.4);
+    border-color: rgba(201,168,76,0.4);
     color: #FAFAFA;
-    background: rgba(99,102,241,0.06);
+    background: rgba(201,168,76,0.06);
   }
 
   /* ── Section container ── */
@@ -185,7 +194,7 @@
     @apply max-w-6xl mx-auto px-6 lg:px-8;
   }
 
-  /* ── Eyebrow label — indigo ── */
+  /* ── Eyebrow label — gold ── */
   .eyebrow {
     display: inline-flex;
     align-items: center;
@@ -194,11 +203,11 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #818CF8;
+    color: #c9a84c;
     padding: 4px 12px;
     border-radius: 100px;
-    background: rgba(99,102,241,0.08);
-    border: 1px solid rgba(99,102,241,0.22);
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.22);
   }
 
   /* ── Eyebrow cyan variant ── */
@@ -217,6 +226,22 @@
     border: 1px solid rgba(6,182,212,0.22);
   }
 
+  /* ── Eyebrow gold variant ── */
+  .eyebrow-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.22);
+  }
+
   /* ── Bento card ── */
   .bento-card {
     background: #000000;
@@ -226,8 +251,8 @@
     overflow: hidden;
   }
   .bento-card:hover {
-    border-color: rgba(99,102,241,0.2);
-    background: #03020a;
+    border-color: rgba(201,168,76,0.2);
+    background: #0a0906;
   }
 
   /* ── Image placeholder ── */
@@ -235,7 +260,7 @@
     position: relative;
     overflow: hidden;
     background: #05040f;
-    border: 1px dashed rgba(99,102,241,0.15);
+    border: 1px dashed rgba(201,168,76,0.15);
     border-radius: 1.25rem;
     display: flex;
     align-items: center;
@@ -294,7 +319,7 @@
     border-bottom: none;
   }
   .compare-col-highlight {
-    background: rgba(99,102,241,0.05);
+    background: rgba(201,168,76,0.05);
   }
 
   /* ── Custom scrollbar ── */
@@ -305,10 +330,10 @@
     background: #000000;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e1b4b;
+    background: #2a2310;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #312e81;
+    background: #3d3418;
   }
 }

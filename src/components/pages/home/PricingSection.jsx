@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Lock } from 'lucide-react'
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 24 },
@@ -10,64 +10,36 @@ const fadeUp = {
   }),
 }
 
-function Check({ text }) {
+function Check({ text, gold }) {
   return (
     <li className="flex items-start gap-2.5 text-sm text-[#A1A1AA]">
-      <CheckCircle2 size={14} className="text-[#6366F1]/70 flex-shrink-0 mt-0.5" />
+      <CheckCircle2 size={14} className={`${gold ? 'text-[#c9a84c]' : 'text-[#c9a84c]/70'} flex-shrink-0 mt-0.5`} />
       {text}
     </li>
   )
 }
 
-const plans = [
-  {
-    name:        'Free',
-    price:       '$0',
-    period:      'forever',
-    description: 'Start your journey with the essentials.',
-    href:        'https://whop.com/checkout/plan_vpZI2qjyG8yxs?d2c=true',
-    cta:         'Join Now',
-    featured:    false,
-    features: [
-      'Free Ultimate Trading Guide',
-      'Frequent Education & Live Trading',
-      'Community & Stream Access',
-      'Free Strategies & Setups',
-    ],
-  },
-  {
-    name:        'Monthly',
-    price:       '$79',
-    period:      'per month',
-    description: 'Full access. Cancel anytime.',
-    href:        'https://whop.com/checkout/plan_l9cYRB40pLTTT/',
-    cta:         'Get Access Now',
-    featured:    true,
-    badge:       'Most Popular',
-    features: [
-      'Fusion v2 Indicator Suite (Monthly)',
-      'Frequent In-Depth Market Analysis',
-      'Frequent Exclusive Livestreams',
-      'All Trading Signals w/ Setups',
-      '24/7 Support + Lifetime Updates',
-    ],
-  },
-  {
-    name:        'Lifetime',
-    price:       '$999',
-    period:      'one time',
-    description: 'Pay once. Own it forever.',
-    href:        'https://whop.com/checkout/plan_LTvSN41OCIQj0/',
-    cta:         'Get Access Now',
-    featured:    false,
-    features: [
-      'Fusion v2 Indicator Suite (Lifetime)',
-      'Frequent In-Depth Market Analysis',
-      'Frequent Exclusive Livestreams',
-      'All Trading Signals w/ Setups',
-      '24/7 Support + Lifetime Updates',
-    ],
-  },
+const proFeatures = [
+  'All coins (BTC, ETH, SOL + more)',
+  'Real-time self-calibrating liquidation prediction heatmap',
+  'Real-time orderbook heatmap',
+  'Unlimited charts & layouts',
+  'Full footprint charts (multi-exchange)',
+  'Bar stats panel (all 9 rows)',
+  'Full OI tools & CVD',
+  'Liq bubbles overlay',
+  'No watermark on screenshots',
+  'Priority support',
+]
+
+const freeFeatures = [
+  'BTC only',
+  'Delayed liquidation heatmap (5 min delay)',
+  '1 chart layout',
+  'Orderbook heatmap',
+  'Footprint chart',
+  'Watermarked screenshots',
+  'Requires Bitunix signup via referral link',
 ]
 
 export default function PricingSection() {
@@ -80,7 +52,7 @@ export default function PricingSection() {
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-[0.04] pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse, #6366F1, transparent 70%)',
+          background: 'radial-gradient(ellipse, #c9a84c, transparent 70%)',
           filter: 'blur(60px)',
         }}
       />
@@ -96,7 +68,7 @@ export default function PricingSection() {
         >
           <span className="eyebrow mb-4">Pricing</span>
           <h2 className="text-[clamp(32px,4vw,48px)] font-black tracking-[-0.03em] text-[#FAFAFA] mt-4">
-            Simple, transparent pricing
+            Simple Pricing. Serious Edge.
           </h2>
           <p className="text-[#A1A1AA] mt-4 text-[16px] max-w-md mx-auto">
             Start free. Upgrade when you're ready. No hidden fees.
@@ -105,77 +77,168 @@ export default function PricingSection() {
 
         {/* Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-          {plans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              variants={fadeUp}
-              custom={i + 1}
-              initial="hidden"
-              animate={inView ? 'visible' : 'hidden'}
-              className="relative flex flex-col"
+
+          {/* ── Free ── */}
+          <motion.div
+            variants={fadeUp}
+            custom={1}
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+            className="relative flex flex-col"
+          >
+            <div className="bento-card flex-1 flex flex-col p-7 gap-6">
+              <div>
+                <p className="text-sm font-semibold text-[#71717A] mb-4">Free</p>
+                <div className="flex items-end gap-2 mb-1">
+                  <span className="text-[48px] font-black tracking-tight text-[#FAFAFA]">$0</span>
+                  <span className="text-sm text-[#71717A] mb-3">/mo</span>
+                </div>
+                <p className="text-sm text-[#A1A1AA]">Get started with the essentials.</p>
+              </div>
+              <ul className="flex flex-col gap-2.5 flex-1">
+                {freeFeatures.map((f) => <Check key={f} text={f} />)}
+              </ul>
+              <p className="text-[11px] text-[#71717A] leading-relaxed border-t border-white/[0.05] pt-3">
+                Free access is powered by our exchange partnership. Sign up to Bitunix through our link — no deposit required.
+              </p>
+              <button
+                onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block w-full"
+              >
+                Join Waitlist
+              </button>
+            </div>
+          </motion.div>
+
+          {/* ── Pro Annual (Featured) ── */}
+          <motion.div
+            variants={fadeUp}
+            custom={2}
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+            className="relative flex flex-col"
+          >
+            <div
+              className="flex-1 flex flex-col scale-[1.02] origin-bottom rounded-[20px] relative"
+              style={{
+                background: '#000',
+                border: '1px solid rgba(201,168,76,0.4)',
+                boxShadow: '0 0 30px rgba(201,168,76,0.08), 0 0 60px rgba(201,168,76,0.04)',
+              }}
             >
-              {plan.featured ? (
-                /* Featured card — elevated with gradient border, no glow/pulse */
-                <div className="gradient-border flex-1 flex flex-col scale-[1.02] origin-bottom">
-                  <div className="flex flex-col flex-1 p-7 gap-6">
+              <div className="flex flex-col flex-1 p-7 gap-6">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
                     <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm font-semibold text-[#6366F1]">{plan.name}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#09090B] bg-[#6366F1] px-2.5 py-1 rounded-full">
-                          {plan.badge}
-                        </span>
-                      </div>
-                      <div className="flex items-end gap-2 mb-1">
-                        <span className="text-[48px] font-black tracking-tight text-[#FAFAFA]">{plan.price}</span>
-                        <span className="text-sm text-[#71717A] mb-3">{plan.period}</span>
-                      </div>
-                      <p className="text-sm text-[#A1A1AA]">{plan.description}</p>
+                      <span className="text-sm font-semibold text-[#c9a84c]">Pro</span>
+                      <span className="text-xs text-[#71717A] ml-2">Billed Annually</span>
                     </div>
-                    <ul className="flex flex-col gap-2.5 flex-1">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2.5 text-sm text-[#A1A1AA]">
-                          <CheckCircle2 size={14} className="text-[#6366F1] flex-shrink-0 mt-0.5" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <a
-                      href={plan.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-gold text-center text-[14px] px-5 py-3 rounded-xl font-bold mt-auto"
-                    >
-                      {plan.cta}
-                    </a>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#09090B] bg-[#c9a84c] px-2.5 py-1 rounded-full">
+                      Most Popular
+                    </span>
+                  </div>
+                  <div className="flex items-end gap-2 mb-1">
+                    <span className="text-[48px] font-black tracking-tight text-[#FAFAFA]">$32</span>
+                    <span className="text-sm text-[#71717A] mb-3">/mo</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-[#71717A] line-through">$468/yr</span>
+                    <span className="text-[#FAFAFA] font-semibold">$384/yr</span>
+                    <span className="text-[#c9a84c] font-bold text-xs">Save $84</span>
                   </div>
                 </div>
-              ) : (
-                /* Regular card */
-                <div className="bento-card flex-1 flex flex-col p-7 gap-6">
+
+                {/* Founding member callout */}
+                <div
+                  className="rounded-xl p-4 flex items-start gap-3"
+                  style={{
+                    background: 'rgba(201,168,76,0.06)',
+                    border: '1px solid rgba(201,168,76,0.2)',
+                  }}
+                >
+                  <Lock size={16} className="text-[#c9a84c] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-[#71717A] mb-4">{plan.name}</p>
-                    <div className="flex items-end gap-2 mb-1">
-                      <span className="text-[48px] font-black tracking-tight text-[#FAFAFA]">{plan.price}</span>
-                      <span className="text-sm text-[#71717A] mb-3">{plan.period}</span>
-                    </div>
-                    <p className="text-sm text-[#A1A1AA]">{plan.description}</p>
+                    <p className="text-sm font-bold text-[#c9a84c]">
+                      Founding Member: $24/mo — locked forever
+                    </p>
+                    <p className="text-xs text-[#A1A1AA] mt-1">
+                      First 100 annual members only. Price never increases.
+                    </p>
                   </div>
-                  <ul className="flex flex-col gap-2.5 flex-1">
-                    {plan.features.map((f) => <Check key={f} text={f} />)}
-                  </ul>
-                  <a
-                    href={plan.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block"
-                  >
-                    {plan.cta}
-                  </a>
                 </div>
-              )}
-            </motion.div>
-          ))}
+
+                <ul className="flex flex-col gap-2.5 flex-1">
+                  {proFeatures.map((f) => <Check key={f} text={f} gold />)}
+                </ul>
+                <button
+                  onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="btn-gold text-center text-[14px] px-5 py-3 rounded-xl font-bold mt-auto w-full"
+                >
+                  Join Waitlist
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ── Pro Monthly ── */}
+          <motion.div
+            variants={fadeUp}
+            custom={3}
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+            className="relative flex flex-col"
+          >
+            <div className="bento-card flex-1 flex flex-col p-7 gap-6">
+              <div>
+                <div className="mb-4">
+                  <span className="text-sm font-semibold text-[#71717A]">Pro</span>
+                  <span className="text-xs text-[#71717A] ml-2">Billed Monthly</span>
+                </div>
+                <div className="flex items-end gap-2 mb-1">
+                  <span className="text-[48px] font-black tracking-tight text-[#FAFAFA]">$39</span>
+                  <span className="text-sm text-[#71717A] mb-3">/mo</span>
+                </div>
+                <p className="text-sm text-[#c9a84c]">
+                  Save 18% with annual billing →
+                </p>
+              </div>
+              <ul className="flex flex-col gap-2.5 flex-1">
+                {proFeatures.map((f) => <Check key={f} text={f} />)}
+              </ul>
+              <button
+                onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block w-full"
+              >
+                Join Waitlist
+              </button>
+            </div>
+          </motion.div>
+
         </div>
+
+        {/* Below cards */}
+        <motion.div
+          className="mt-10 text-center space-y-5"
+          variants={fadeUp}
+          custom={4}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+        >
+          <p className="text-sm text-[#71717A]">
+            Elite tier — coming soon. Join the waitlist to be notified when early access opens.
+          </p>
+          <p
+            className="inline-block text-sm font-bold tracking-widest px-5 py-2.5 rounded-lg"
+            style={{
+              fontFamily: '"JetBrains Mono", "IBM Plex Mono", monospace',
+              color: '#39ff14',
+              background: 'rgba(57,255,20,0.05)',
+              border: '1px solid rgba(57,255,20,0.15)',
+            }}
+          >
+            [ FOUNDING SPOTS REMAINING: 94 / 100 ]
+          </p>
+        </motion.div>
       </div>
     </section>
   )

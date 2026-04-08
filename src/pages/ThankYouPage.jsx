@@ -7,9 +7,9 @@ export default function ThankYouPage() {
       {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(99,102,241,0.06), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.06), transparent)' }}
       />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#6366F1]/30 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c9a84c]/30 to-transparent" />
 
       <motion.div
         className="relative text-center max-w-lg"
@@ -18,12 +18,12 @@ export default function ThankYouPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Check icon */}
-        <div className="w-16 h-16 rounded-2xl bg-[#6366F1]/10 border border-[#6366F1]/25 flex items-center justify-center mx-auto mb-7">
-          <CheckCircle2 size={28} className="text-[#6366F1]" />
+        <div className="w-16 h-16 rounded-2xl bg-[#c9a84c]/10 border border-[#c9a84c]/25 flex items-center justify-center mx-auto mb-7">
+          <CheckCircle2 size={28} className="text-[#c9a84c]" />
         </div>
 
         <h1 className="text-[clamp(36px,5vw,56px)] font-black tracking-[-0.035em] leading-[1.04] mb-5">
-          <span className="gradient-text">Welcome Aboard!</span>
+          <span className="gradient-text-gold">Welcome Aboard!</span>
         </h1>
 
         <div className="text-[16px] text-[#A1A1AA] leading-[1.8] mb-8 space-y-3 text-left bg-black border border-white/[0.06] rounded-2xl p-6">
@@ -37,7 +37,7 @@ export default function ThankYouPage() {
             24/7 if you need anything at all.
           </p>
           <p className="text-[#FAFAFA] font-semibold">Let's make this count.</p>
-          <p className="text-[#6366F1] font-bold">— The TradeNet Team</p>
+          <p className="text-[#c9a84c] font-bold">— The TradeNet Team</p>
         </div>
 
         <a
