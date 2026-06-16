@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { CheckCircle2, Lock } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { isCheckoutConfigured, buildCheckoutUrl } from '@/lib/checkout'
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 24 },
@@ -47,11 +49,30 @@ export default function PricingSection() {
   const ref    = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   function goToWaitlist() {
     navigate('/terminal')
     setTimeout(() => document.getElementById('terminal-waitlist')?.scrollIntoView({ behavior: 'smooth' }), 350)
   }
+
+  // Account-first buy flow. Until Shopify variant ids are configured, checkout
+  // is not live -> fall back to the waitlist so the page still works.
+  function handleBuy(plan) {
+    if (!isCheckoutConfigured(plan)) {
+      goToWaitlist()
+      return
+    }
+    if (!user) {
+      navigate('/login?return=' + encodeURIComponent('/#pricing'))
+      return
+    }
+    const url = buildCheckoutUrl(plan, user.id)  // note_attributes.profile_id = user.id
+    if (url) window.location.href = url
+    else goToWaitlist()
+  }
+
+  const buyLabel = isCheckoutConfigured() ? 'Get Pro' : 'Join Waitlist'
 
   return (
     <section id="pricing" className="py-28 bg-black relative overflow-hidden" ref={ref}>
@@ -178,10 +199,10 @@ export default function PricingSection() {
                   {proFeatures.map((f) => <Check key={f} text={f} gold />)}
                 </ul>
                 <button
-                  onClick={goToWaitlist}
+                  onClick={() => handleBuy('annual')}
                   className="btn-gold text-center text-[14px] px-5 py-3 rounded-xl font-bold mt-auto w-full"
                 >
-                  Join Waitlist
+                  {buyLabel}
                 </button>
               </div>
             </div>
@@ -213,10 +234,10 @@ export default function PricingSection() {
                 {proFeatures.map((f) => <Check key={f} text={f} />)}
               </ul>
               <button
-                onClick={goToWaitlist}
+                onClick={() => handleBuy('monthly')}
                 className="btn-outline text-center text-[14px] px-5 py-3 rounded-xl font-semibold mt-auto block w-full"
               >
-                Join Waitlist
+                {buyLabel}
               </button>
             </div>
           </motion.div>

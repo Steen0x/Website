@@ -1,23 +1,74 @@
-import { useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { User, Mail, Shield, LogOut } from 'lucide-react'
+import { User, Mail, Shield, LogOut, RefreshCw, Download, ExternalLink } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { MANAGE_SUBSCRIPTION_URL, TERMINAL_DOWNLOAD_URL } from '@/lib/checkout'
 
+// access_tier (derived security tier) -> display. NOT subscription_tier.
 const tierLabels = {
-  free:         'Free',
-  pro_monthly:  'Pro — Monthly',
-  pro_annual:   'Pro — Annual',
-  founding:     'Founding Member',
+  waitlist:          'Waitlist',
+  free:              'Free',
+  referral_verified: 'Referral (Bitunix)',
+  beta:              'Beta',
+  pro:               'Pro',
+  admin:             'Admin',
+}
+
+const statusLabels = {
+  waitlist: 'On the waitlist',
+  active:   'Active',
+  comped:   'Comped',
+  past_due: 'Payment past due',
+  revoked:  'Revoked',
 }
 
 export default function AccountPage() {
-  const { user, profile, loading, signOut } = useAuth()
+  const { user, profile, loading, signOut, refreshAccess } = useAuth()
   const navigate = useNavigate()
+  const [params, setParams] = useSearchParams()
+  const [refreshing, setRefreshing] = useState(false)
+  const [activating, setActivating] = useState(params.get('activating') === '1')
+  const pollRef = useRef(null)
 
   useEffect(() => {
     if (!loading && !user) navigate('/login')
   }, [loading, user, navigate])
+
+  const tier = profile?.access_tier || 'waitlist'
+  const isElevated = tier !== 'free' && tier !== 'waitlist'
+
+  // Activation-race poll: after returning from checkout (?activating=1), refresh
+  // the session (re-mints claims) immediately, then every ~3s until the plan
+  // lands or we time out at 30s. `cancelled` guards against stale async writes
+  // after unmount/re-run.
+  useEffect(() => {
+    if (!activating || !user) return
+    let elapsed = 0
+    let cancelled = false
+
+    const finish = () => {
+      if (cancelled) return
+      clearInterval(pollRef.current)
+      setActivating(false)
+      const next = new URLSearchParams(params)
+      next.delete('activating')
+      setParams(next, { replace: true })
+    }
+
+    const tick = async () => {
+      const p = await refreshAccess()
+      if (cancelled) return
+      const t = p?.access_tier
+      if ((t && t !== 'free' && t !== 'waitlist') || elapsed >= 30000) finish()
+    }
+
+    tick() // immediate, don't wait 3s for the first check
+    pollRef.current = setInterval(() => { elapsed += 3000; tick() }, 3000)
+
+    return () => { cancelled = true; clearInterval(pollRef.current) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activating, user])
 
   if (loading || !user) {
     return (
@@ -27,9 +78,13 @@ export default function AccountPage() {
     )
   }
 
-  const tier = profile?.subscription_tier || 'free'
-  const tierLabel = tierLabels[tier] || 'Waitlist'
-  const isActive = tier !== 'free'
+  const status = profile?.access_status || 'waitlist'
+  const expires = profile?.plan_expires_at ? new Date(profile.plan_expires_at) : null
+
+  async function handleRefresh() {
+    setRefreshing(true)
+    try { await refreshAccess() } finally { setRefreshing(false) }
+  }
 
   async function handleSignOut() {
     await signOut()
@@ -46,6 +101,14 @@ export default function AccountPage() {
           className="max-w-lg mx-auto space-y-6"
         >
           <h1 className="text-3xl font-black text-[#FAFAFA]">Account</h1>
+
+          {activating && (
+            <div className="rounded-xl p-4 flex items-center gap-3"
+                 style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)' }}>
+              <RefreshCw size={15} className="text-[#c9a84c] animate-spin" />
+              <p className="text-sm text-[#A1A1AA]">Activating your plan… this usually takes a few seconds.</p>
+            </div>
+          )}
 
           {/* Profile card */}
           <div className="bento-card p-6 space-y-5">
@@ -69,34 +132,77 @@ export default function AccountPage() {
               <div className="flex items-center gap-3">
                 <Shield size={14} className="text-[#71717A]" />
                 <span className="text-sm text-[#A1A1AA]">
-                  Subscription:{' '}
-                  <span className={isActive ? 'text-[#c9a84c] font-semibold' : 'text-[#71717A]'}>
-                    {tierLabel}
+                  Plan:{' '}
+                  <span className={isElevated ? 'text-[#c9a84c] font-semibold' : 'text-[#71717A]'}>
+                    {tierLabels[tier] || tier}
                   </span>
+                  <span className="text-[#52525B]"> · {statusLabels[status] || status}</span>
                 </span>
               </div>
+              {expires && isElevated && (
+                <div className="flex items-center gap-3">
+                  <RefreshCw size={14} className="text-[#71717A]" />
+                  <span className="text-sm text-[#A1A1AA]">
+                    Renews / expires {expires.toLocaleDateString()}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {!isActive && (
-              <div
-                className="rounded-xl p-4"
-                style={{
-                  background: 'rgba(201,168,76,0.04)',
-                  border: '1px solid rgba(201,168,76,0.12)',
-                }}
+            {/* Actions */}
+            <div className="border-t border-white/[0.05] pt-4 flex flex-wrap gap-3">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors disabled:opacity-50"
               >
-                <p className="text-sm text-[#A1A1AA]">
-                  You're on the free tier.{' '}
-                  <Link
-                    to="/#pricing"
-                    className="text-[#c9a84c] hover:text-[#f0c040] font-semibold transition-colors"
-                  >
-                    Upgrade to Pro →
-                  </Link>
-                </p>
-              </div>
-            )}
+                <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+                Refresh access
+              </button>
+              {isElevated && (
+                <a
+                  href={MANAGE_SUBSCRIPTION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
+                >
+                  <ExternalLink size={14} />
+                  Manage subscription
+                </a>
+              )}
+            </div>
           </div>
+
+          {/* Terminal download — desktop-eligible tiers only (the desktop app
+              refuses free; terminal_access is true for free too, so gate on
+              isElevated, not terminal_access). */}
+          {isElevated && TERMINAL_DOWNLOAD_URL && (
+            <a
+              href={TERMINAL_DOWNLOAD_URL}
+              className="bento-card p-5 flex items-center gap-3 hover:border-[#c9a84c]/30 transition-colors"
+            >
+              <Download size={18} className="text-[#c9a84c]" />
+              <div>
+                <p className="text-sm font-bold text-[#FAFAFA]">Download TradeNet Terminal</p>
+                <p className="text-xs text-[#71717A]">Windows & macOS · log in with this account</p>
+              </div>
+            </a>
+          )}
+
+          {/* Upgrade prompt for free/waitlist */}
+          {!isElevated && (
+            <div
+              className="rounded-xl p-4"
+              style={{ background: 'rgba(201,168,76,0.04)', border: '1px solid rgba(201,168,76,0.12)' }}
+            >
+              <p className="text-sm text-[#A1A1AA]">
+                You're on the {tierLabels[tier] || tier} plan.{' '}
+                <Link to="/#pricing" className="text-[#c9a84c] hover:text-[#f0c040] font-semibold transition-colors">
+                  Upgrade to Pro →
+                </Link>
+              </p>
+            </div>
+          )}
 
           {/* Sign out */}
           <button

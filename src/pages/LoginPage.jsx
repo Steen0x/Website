@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -11,6 +11,15 @@ export default function LoginPage() {
   const [loading, setLoading]   = useState(false)
   const { signIn } = useAuth()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+
+  // Only honor in-app relative returns (defense against open redirect): a
+  // single-leading-slash path (not '//host') or a bare '#fragment'. Anything
+  // absolute/protocol-relative falls back to /account.
+  const rawReturn = params.get('return') || '/account'
+  const isSafeReturn =
+    (rawReturn.startsWith('/') && !rawReturn.startsWith('//')) || rawReturn.startsWith('#')
+  const returnTo = isSafeReturn ? rawReturn : '/account'
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -19,7 +28,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email.trim().toLowerCase(), password)
-      navigate('/account')
+      navigate(returnTo)
     } catch (err) {
       setError(err.message || 'Invalid email or password.')
     } finally {

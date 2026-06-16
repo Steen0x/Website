@@ -16,6 +16,18 @@ export function AuthProvider({ children }) {
       .eq('id', userId)
       .single()
     setProfile(data)
+    return data
+  }
+
+  // Force a fresh JWT (re-runs the access-token hook -> fresh tradenet_* claims)
+  // and re-read the profile. Used after a purchase to pick up the new plan
+  // without a re-login. Returns the refreshed profile row (or null).
+  async function refreshAccess() {
+    const { data: { session: s } } = await supabase.auth.refreshSession()
+    setSession(s ?? null)
+    setUser(s?.user ?? null)
+    if (s?.user) return await fetchProfile(s.user.id)
+    return null
   }
 
   useEffect(() => {
@@ -55,7 +67,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshAccess, refreshProfile: fetchProfile }}>
       {children}
     </AuthContext.Provider>
   )
