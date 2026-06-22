@@ -124,6 +124,7 @@ Deno.serve(async (req) => {
       mode: "subscription",
       customer: customerId,
       client_reference_id: user.id,
+      allow_promotion_codes: "true",
       success_url: `${SITE_URL}/account?activating=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SITE_URL}/#pricing`,
       "line_items[0][price]": plan.price,
@@ -144,4 +145,3 @@ Deno.serve(async (req) => {
     return json({ error: message }, status);
   }
 });
-
