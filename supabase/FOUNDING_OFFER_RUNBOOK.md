@@ -1,14 +1,14 @@
 # TradeNet Founding Offer Runbook
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
 ## Offer Contract
 
 The founding offer is private. It is not a Stripe coupon and it cannot be
 claimed by entering a code.
 
-- Eligible cohort: first 464 unique normalized emails from the original
-  TradeNet waitlist, ordered by earliest signup
+- Eligible cohort: every unique normalized email present in the TradeNet
+  waitlist at the launch snapshot, ordered by earliest signup
 - Purchase cap: first 100 completed founding purchases
 - Claim window: seven days from the account's individual invitation
 - Checkout reservation: 35 minutes while a Stripe Checkout Session is active
@@ -18,8 +18,9 @@ claimed by entering a code.
 - Public annual: $384 per year
 
 Eligibility is identity-bound. The Supabase account email must match the
-private cohort email. Later public waitlist inserts do not enter the founding
-cohort.
+private cohort email. Migration `012` expands the original 464-row snapshot to
+all waitlist members present at launch. Later public waitlist inserts do not
+enter the founding cohort automatically.
 
 ## Projects
 
@@ -293,13 +294,14 @@ where id = 1;
 
 1. Back up production and verify the current waitlist ordering and unique email
    count.
-2. Review the 464-row snapshot query before applying migration `006`.
+2. Review the snapshot queries in migrations `006` and `012`.
 3. Apply migrations `006_founding_offer_infrastructure.sql`,
    `007_founding_member_sequence_floor.sql`, and
-   `008_stripe_webhook_ordering_guard.sql`, then
-   `009_stripe_subscription_generation_guard.sql` to production.
-4. Confirm exactly 464 private eligibility rows and inspect the first and last
-   cohort positions.
+   `008_stripe_webhook_ordering_guard.sql`,
+   `009_stripe_subscription_generation_guard.sql`, and
+   `012_expand_founding_cohort_to_launch_waitlist.sql` to production.
+4. Confirm the private eligibility count exactly matches the valid unique
+   waitlist count and inspect the first and last cohort positions.
 5. Create or verify all six live Stripe Prices: two standard, four founding.
 6. Create the production webhook destination and set its live signing secret.
 7. Deploy the four Edge Functions with all checkout gates still false.
@@ -308,8 +310,8 @@ where id = 1;
 10. Complete one real low-risk purchase and inspect the Stripe schedule,
     webhook event ledger, profile entitlement, and terminal access.
 11. Enable the launch website build.
-12. Invite waitlist waves deliberately. Do not invite all 464 at once unless
-    support and monitoring are ready.
+12. Invite waitlist waves deliberately. Do not invite the full cohort at once
+    unless support and monitoring are ready.
 13. Open public checkout only when standard purchase testing is complete.
 
 ## Monitoring Queries
