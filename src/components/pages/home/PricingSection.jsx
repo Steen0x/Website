@@ -63,7 +63,10 @@ const planFeatures = [
 function checkoutMessage(error) {
   const code = error?.message
   if (code === 'existing_subscription' || code === 'founding_offer_already_redeemed') {
-    return 'This account already has billing access. Manage it from the account page.'
+    return 'This account already has a Stripe subscription. Manage or update it from the account page.'
+  }
+  if (code === 'payment_recovery_unavailable') {
+    return 'Your earlier payment is still pending but cannot be reopened safely. Manage billing from the account page or contact support.'
   }
   if (code === 'founding_offer_not_invited') {
     return 'Your founding rate is reserved, but your invitation wave has not opened yet.'

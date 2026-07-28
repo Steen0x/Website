@@ -19,6 +19,13 @@ const EXPECT_LIVE_MODE = envFlag("STRIPE_EXPECT_LIVE_MODE", false);
 
 type PlanKey = "monthly" | "annual";
 
+type CheckoutRecovery = {
+  url: string;
+  offer: "founding" | "standard";
+  reused: true;
+  recovery: "checkout_session" | "hosted_invoice";
+};
+
 type PlanDefinition = {
   tier: "pro_monthly" | "pro_annual";
   interval: "month" | "year";
@@ -152,6 +159,7 @@ async function releaseReservation(
   userId: string,
   reservationToken: string,
   reason: string,
+  throwOnError = false,
 ): Promise<void> {
   const { error } = await svc.rpc("release_founding_offer_reservation", {
     p_user: userId,
@@ -159,7 +167,10 @@ async function releaseReservation(
     p_session_id: null,
     p_reason: reason.slice(0, 500),
   });
-  if (error) console.error("reservation release failed:", error.message);
+  if (error) {
+    if (throwOnError) throw new CheckoutError("reservation_release_failed", 500);
+    console.error("reservation release failed:", error.message);
+  }
 }
 
 async function validatePlanPrices(plan: PlanDefinition, founding: boolean): Promise<void> {
@@ -232,6 +243,164 @@ async function ensureCustomer(
   return customer.id;
 }
 
+function stringId(value: unknown): string | null {
+  if (typeof value === "string" && value) return value;
+  if (
+    value && typeof value === "object" &&
+    typeof (value as { id?: unknown }).id === "string"
+  ) {
+    return (value as { id: string }).id;
+  }
+  return null;
+}
+
+function isMissingStripeResource(error: unknown): boolean {
+  return error instanceof StripeRequestError &&
+    error.status === 404 &&
+    (error.code === "resource_missing" || error.code === null);
+}
+
+function checkoutBelongsToUser(session: any, userId: string): boolean {
+  const owner = String(
+    session?.client_reference_id || session?.metadata?.profile_id || "",
+  );
+  return owner === userId;
+}
+
+async function recoverIncompleteSubscription(
+  userId: string,
+  subscription: any,
+): Promise<CheckoutRecovery | null> {
+  const subscriptionId = stringId(subscription?.id);
+  if (!subscriptionId) throw new CheckoutError("subscription_lookup_failed", 502);
+
+  const sessions = await stripeRequest(
+    STRIPE_SECRET_KEY,
+    "GET",
+    "/v1/checkout/sessions",
+    {
+      subscription: subscriptionId,
+      limit: "10",
+    },
+  );
+  const openSession = Array.isArray(sessions?.data)
+    ? sessions.data.find((session: any) =>
+      session?.status === "open" &&
+      checkoutBelongsToUser(session, userId) &&
+      typeof session?.url === "string" &&
+      Number(session?.expires_at || 0) > Math.floor(Date.now() / 1000)
+    )
+    : null;
+
+  if (openSession) {
+    return {
+      url: openSession.url,
+      offer: openSession?.metadata?.founding_offer === "true"
+        ? "founding"
+        : "standard",
+      reused: true,
+      recovery: "checkout_session",
+    };
+  }
+
+  if (subscription?.metadata?.founding_offer === "true") {
+    const reservationToken = asUuid(
+      subscription?.metadata?.founding_reservation_token,
+    );
+    if (!reservationToken) {
+      throw new CheckoutError("payment_recovery_unavailable", 409);
+    }
+
+    await stripeRequest(
+      STRIPE_SECRET_KEY,
+      "DELETE",
+      `/v1/subscriptions/${encodeURIComponent(subscriptionId)}`,
+      {
+        invoice_now: "false",
+        prorate: "false",
+      },
+      `tradenet-expire-incomplete-${subscriptionId}`,
+    );
+    await releaseReservation(
+      userId,
+      reservationToken,
+      "founding_incomplete_checkout_closed",
+      true,
+    );
+    return null;
+  }
+
+  const invoiceId = stringId(subscription?.latest_invoice);
+  if (!invoiceId) throw new CheckoutError("payment_recovery_unavailable", 409);
+
+  const invoice = await stripeRequest(
+    STRIPE_SECRET_KEY,
+    "GET",
+    `/v1/invoices/${encodeURIComponent(invoiceId)}`,
+  );
+  const invoiceSubscriptionId = stringId(
+    invoice?.subscription || invoice?.parent?.subscription_details?.subscription,
+  );
+  if (
+    invoiceSubscriptionId !== subscriptionId ||
+    invoice?.status !== "open" ||
+    typeof invoice?.hosted_invoice_url !== "string"
+  ) {
+    throw new CheckoutError("payment_recovery_unavailable", 409);
+  }
+
+  return {
+    url: invoice.hosted_invoice_url,
+    offer: "standard",
+    reused: true,
+    recovery: "hosted_invoice",
+  };
+}
+
+async function resolveExistingSubscription(
+  userId: string,
+  profile: any,
+): Promise<CheckoutRecovery | null> {
+  const subscriptionId = stringId(profile?.stripe_subscription_id);
+  if (!subscriptionId) return null;
+
+  let subscription: any;
+  try {
+    subscription = await stripeRequest(
+      STRIPE_SECRET_KEY,
+      "GET",
+      `/v1/subscriptions/${encodeURIComponent(subscriptionId)}`,
+    );
+  } catch (error) {
+    if (isMissingStripeResource(error)) return null;
+    throw error;
+  }
+
+  const owner = String(subscription?.metadata?.profile_id || "");
+  const expectedCustomerId = String(
+    profile?.stripe_customer_id ||
+      (profile?.billing_provider === "stripe" ? profile?.billing_customer_id : "") ||
+      "",
+  );
+  const actualCustomerId = stringId(subscription?.customer);
+  if (
+    (owner && owner !== userId) ||
+    (expectedCustomerId && actualCustomerId !== expectedCustomerId)
+  ) {
+    throw new CheckoutError("subscription_ownership_mismatch", 409);
+  }
+
+  const status = String(subscription?.status || "");
+  if (status === "incomplete") {
+    return await recoverIncompleteSubscription(userId, subscription);
+  }
+  if (status === "canceled" || status === "incomplete_expired") {
+    return null;
+  }
+
+  throw new CheckoutError("existing_subscription", 409);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
@@ -256,9 +425,8 @@ Deno.serve(async (req) => {
     const plan = PLANS[planKey];
 
     const profile = await loadProfile(user);
-    const hasExistingSubscription = Boolean(profile.stripe_subscription_id) &&
-      !["cancelled", "refunded"].includes(String(profile.billing_status || ""));
-    if (hasExistingSubscription) throw new CheckoutError("existing_subscription", 409);
+    const recovery = await resolveExistingSubscription(user.id, profile);
+    if (recovery) return json(recovery);
 
     const offer = await getOfferContext(user.id);
     const founding = offer?.eligible === true &&

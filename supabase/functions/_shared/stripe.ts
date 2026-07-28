@@ -16,7 +16,7 @@ export class StripeRequestError extends Error {
 
 export async function stripeRequest(
   secretKey: string,
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "DELETE",
   path: string,
   params?: StripeParams,
   idempotencyKey?: string,

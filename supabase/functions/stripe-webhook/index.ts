@@ -266,11 +266,6 @@ async function ensureFoundingSchedule(subscription: any): Promise<string> {
   return configured.id;
 }
 
-async function recalc(userId: string): Promise<void> {
-  const { error } = await svc.rpc("recalc_entitlements", { p_user: userId });
-  if (error) throw new Error(`recalc_entitlements_failed: ${error.message}`);
-}
-
 async function findProfileId(options: {
   profileId?: string | null;
   stripeCustomerId?: string | null;
@@ -322,27 +317,30 @@ async function upsertSubscription(
 
   const status = String(subscription?.status || "active");
   const tier = tierFromSubscription(subscription);
-  const update: Record<string, unknown> = {
-    billing_provider: PROVIDER,
-    billing_status: activeBillingStatus(status),
-    access_status: accessStatusForBilling(status),
-    access_source: PROVIDER,
-    billing_customer_id: customerId,
-    stripe_customer_id: customerId,
-    stripe_subscription_id: subscriptionId,
-  };
-
-  if (tier) update.subscription_tier = tier;
   const start = fromUnix(subscription?.start_date);
   const end = fromUnix(subscription?.current_period_end);
-  if (start) update.plan_started_at = start;
-  if (end) update.plan_expires_at = end;
+  const created = fromUnix(subscription?.created);
+  const mayClearRevocation = status === "active" || status === "trialing";
 
-  const { error } = await svc.from("profiles").update(update).eq("id", userId);
+  const { data, error } = await svc.rpc("apply_stripe_billing_state", {
+    p_user: userId,
+    p_subscription_id: subscriptionId || null,
+    p_subscription_created_at: created,
+    p_customer_id: customerId,
+    p_subscription_tier: tier,
+    p_billing_status: activeBillingStatus(status),
+    p_access_status: accessStatusForBilling(status),
+    p_plan_started_at: start,
+    p_plan_expires_at: end,
+    p_may_clear_revocation: mayClearRevocation,
+  });
   if (error) throw new Error(`subscription_update_failed: ${error.message}`);
 
-  await recalc(userId);
-  return `subscription_${status}`;
+  if (data === "applied") return `subscription_${status}`;
+  if (data === "revoked_event_ignored") {
+    return `subscription_${status}_ignored_after_revocation`;
+  }
+  return `subscription_${status}_${String(data || "ignored")}`;
 }
 
 async function foundingRowForSubscription(subscription: any): Promise<any | null> {
@@ -414,6 +412,26 @@ async function handleCheckoutExpired(session: any): Promise<string> {
   );
   if (!userId || !reservationToken) return "checkout_expired_unresolved";
 
+  const subscriptionId = stringId(session?.subscription);
+  if (subscriptionId) {
+    const subscription = await fetchSubscription(subscriptionId);
+    const status = String(subscription?.status || "");
+    if (status === "incomplete") {
+      await stripeRequest(
+        STRIPE_SECRET_KEY,
+        "DELETE",
+        `/v1/subscriptions/${encodeURIComponent(subscriptionId)}`,
+        {
+          invoice_now: "false",
+          prorate: "false",
+        },
+        `tradenet-expire-incomplete-${subscriptionId}`,
+      );
+    } else if (status !== "canceled" && status !== "incomplete_expired") {
+      return `founding_expiration_ignored_for_${status || "unknown"}_subscription`;
+    }
+  }
+
   const { data, error } = await svc.rpc("release_founding_offer_reservation", {
     p_user: userId,
     p_reservation_token: reservationToken,
@@ -451,17 +469,27 @@ async function handleSubscriptionDeleted(subscription: any): Promise<string> {
   });
   if (!userId) return "unresolved";
 
-  const { error } = await svc.from("profiles").update({
-    billing_status: "cancelled",
-    access_status: "past_due",
-    plan_expires_at: fromUnix(subscription?.current_period_end) ||
+  const { data, error } = await svc.rpc("apply_stripe_billing_state", {
+    p_user: userId,
+    p_subscription_id: subscriptionId || null,
+    p_subscription_created_at: fromUnix(subscription?.created),
+    p_customer_id: customerId,
+    p_subscription_tier: tierFromSubscription(subscription),
+    p_billing_status: "cancelled",
+    p_access_status: "past_due",
+    p_plan_started_at: fromUnix(subscription?.start_date),
+    p_plan_expires_at: fromUnix(subscription?.current_period_end) ||
       fromUnix(subscription?.ended_at) ||
       new Date().toISOString(),
-  }).eq("id", userId);
+    p_may_clear_revocation: false,
+  });
   if (error) throw new Error(`subscription_delete_failed: ${error.message}`);
 
-  await recalc(userId);
-  return "subscription_cancelled";
+  if (data === "applied") return "subscription_cancelled";
+  if (data === "revoked_event_ignored") {
+    return "subscription_cancelled_ignored_after_revocation";
+  }
+  return `subscription_cancelled_${String(data || "ignored")}`;
 }
 
 async function handleInvoicePaid(invoice: any): Promise<string> {
@@ -483,23 +511,20 @@ async function handleInvoiceFailed(invoice: any): Promise<string> {
   const subscriptionId = stringId(
     invoice?.subscription || invoice?.parent?.subscription_details?.subscription,
   );
-  const customerId = stringId(invoice?.customer);
-  const userId = await findProfileId({
-    stripeCustomerId: customerId,
-    stripeSubscriptionId: subscriptionId,
-  });
-  if (!userId) return "unresolved";
+  if (!subscriptionId) return "invoice_no_subscription";
 
-  const { error } = await svc.from("profiles")
-    .update({ access_status: "past_due", billing_status: "past_due" })
-    .eq("id", userId);
-  if (error) throw new Error(`invoice_failed_update_failed: ${error.message}`);
-
-  await recalc(userId);
-  return "past_due";
+  const subscription = await fetchSubscription(subscriptionId);
+  return `payment_failed_${await upsertSubscription(
+    subscription,
+    subscription?.metadata?.profile_id || null,
+  )}`;
 }
 
-async function handleChargeRefunded(chargeOrDispute: any): Promise<string> {
+async function handleHardRevocation(
+  chargeOrDispute: any,
+  billingStatus: "refunded" | "disputed",
+  reason: "stripe_refund" | "stripe_dispute",
+): Promise<string> {
   let customerId = stringId(chargeOrDispute?.customer);
   const chargeId = stringId(chargeOrDispute?.charge);
   if (!customerId && chargeId) {
@@ -514,20 +539,20 @@ async function handleChargeRefunded(chargeOrDispute: any): Promise<string> {
   const userId = await findProfileId({ stripeCustomerId: customerId });
   if (!userId) return "unresolved";
 
-  const { error } = await svc.from("profiles")
-    .update({ access_status: "revoked", billing_status: "refunded" })
-    .eq("id", userId);
+  const { error } = await svc.rpc("apply_stripe_hard_revocation", {
+    p_user: userId,
+    p_billing_status: billingStatus,
+    p_reason: reason,
+  });
   if (error) throw new Error(`refund_revoke_failed: ${error.message}`);
-
-  await recalc(userId);
 
   try {
     // @ts-ignore The admin API is available on the service-role client.
     await svc.auth.admin.signOut(userId, "global");
   } catch (error) {
-    console.error("sign-out-everywhere failed after refund revoke:", error);
+    console.error("sign-out-everywhere failed after hard revoke:", error);
   }
-  return "revoked";
+  return reason;
 }
 
 Deno.serve(async (req) => {
@@ -596,8 +621,10 @@ Deno.serve(async (req) => {
         status = await handleInvoiceFailed(object);
         break;
       case "charge.refunded":
+        status = await handleHardRevocation(object, "refunded", "stripe_refund");
+        break;
       case "charge.dispute.created":
-        status = await handleChargeRefunded(object);
+        status = await handleHardRevocation(object, "disputed", "stripe_dispute");
         break;
       default:
         console.log(`unhandled Stripe topic: ${type}`);

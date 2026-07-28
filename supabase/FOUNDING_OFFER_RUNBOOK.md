@@ -1,6 +1,6 @@
 # TradeNet Founding Offer Runbook
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
 ## Offer Contract
 
@@ -38,6 +38,8 @@ Do not copy sandbox Price IDs or signing secrets into production.
 | Monthly renewal | `price_1TxJl22M901mWzyaEDEHRdSm` |
 | Annual intro | `price_1TxJlM2M901mWzyap5dCFfjx` |
 | Annual renewal | `price_1TxJlb2M901mWzya0NcQpNVZ` |
+| Standard monthly | `price_1Txys02M901mWzyayDoSxoup` |
+| Standard annual | `price_1TxysJ2M901mWzyan0kDZVnF` |
 
 The checkout function validates each Price directly with Stripe before
 creating a session. It rejects the wrong currency, amount, cadence, active
@@ -80,11 +82,11 @@ STRIPE_PRICE_FOUNDING_MONTHLY_INTRO=price_1TxJkS2M901mWzya5YCmCwtr
 STRIPE_PRICE_FOUNDING_MONTHLY_RENEWAL=price_1TxJl22M901mWzyaEDEHRdSm
 STRIPE_PRICE_FOUNDING_ANNUAL_INTRO=price_1TxJlM2M901mWzyap5dCFfjx
 STRIPE_PRICE_FOUNDING_ANNUAL_RENEWAL=price_1TxJlb2M901mWzya0NcQpNVZ
+STRIPE_PRICE_MONTHLY=price_1Txys02M901mWzyayDoSxoup
+STRIPE_PRICE_ANNUAL=price_1TxysJ2M901mWzyan0kDZVnF
 ```
 
-Staging does not need `STRIPE_PRICE_MONTHLY` or `STRIPE_PRICE_ANNUAL` to test
-an invited founding purchase. It needs those standard sandbox Price IDs before
-public checkout can be tested.
+All six sandbox Prices are configured in staging.
 
 ## Stripe Sandbox Webhook
 
@@ -112,6 +114,56 @@ charge.dispute.created
 
 Copy that destination's sandbox signing secret to
 `STRIPE_WEBHOOK_SECRET` in staging.
+
+## Webhook Ordering
+
+Stripe does not guarantee event delivery order. A dispute can arrive before
+the successful Checkout, invoice, and subscription events from the same
+purchase.
+
+Migrations `008_stripe_webhook_ordering_guard.sql` and
+`009_stripe_subscription_generation_guard.sql` make billing transitions
+atomic:
+
+- `apply_stripe_hard_revocation` locks the profile and writes the profile and
+  deny set in one transaction.
+- `apply_stripe_billing_state` ignores all later events from the revoked
+  subscription, even when those events report an active paid state.
+- The profile stores the current Stripe subscription creation time. Once a
+  newer subscription is authoritative, events from an older subscription
+  cannot replace it or downgrade access.
+- A failed or incomplete replacement cannot displace an existing nonterminal
+  subscription.
+- A different successful subscription can restore access only when its Stripe
+  creation time is later than the hard revocation.
+- Refunds use `billing_status=refunded` and deny-set reason `stripe_refund`.
+- Disputes use `billing_status=disputed` and deny-set reason `stripe_dispute`.
+
+Never replace these functions with separate profile-update and entitlement
+recalculation calls.
+
+## Failed First Payment Recovery
+
+Stripe keeps a subscription in `incomplete` state for up to 23 hours after its
+first payment fails. Checkout handles that state without creating a duplicate
+subscription:
+
+- If the original Checkout Session is still open, the account is sent back to
+  the same secure Checkout URL.
+- If a standard Checkout Session has expired but the first invoice is still
+  payable, the account is sent to Stripe's Hosted Invoice Page for that exact
+  subscription.
+- If a founding Checkout Session is no longer open, the incomplete
+  subscription is canceled and its temporary reservation is released before
+  a new founding Checkout Session can be created.
+- `incomplete_expired` and `canceled` subscriptions are terminal and do not
+  block a new Checkout Session.
+- Active, trialing, past-due, unpaid, or paused subscriptions continue to
+  block a second subscription. Those accounts must use the billing portal.
+
+Never allow a database status alone to decide whether a second subscription
+can be created. The Checkout function verifies the current subscription
+directly with Stripe.
 
 ## Invite A Wave
 
@@ -201,8 +253,20 @@ Complete these before any production migration or live checkout:
 10. Cancellation preserves access through the paid period and does not restore
     the redeemed founding offer.
 11. Payment failure, refund, and dispute paths produce the expected entitlement
-    state.
+    state. After a refund or dispute, replay a stale successful Checkout or
+    invoice event and confirm the hard revocation, version, and timestamps do
+    not change.
 12. The 101st concurrent founding reservation or redemption is rejected.
+13. After an initial card decline, starting the same purchase reopens the
+    existing Checkout Session instead of creating a second subscription.
+14. After an incomplete standard Checkout Session expires, the retry opens the
+    exact unpaid invoice. After an incomplete founding Checkout Session
+    expires, the old subscription and reservation are retired before a fresh
+    reservation is created.
+15. After a newer subscription becomes active, replay subscription,
+    cancellation, invoice-failure, and Checkout events from the older
+    subscription. The current subscription id, access, version, and timestamps
+    must not regress.
 
 Inspect the Stripe subscription and schedule in the Stripe Dashboard after
 each completed payment. Do not infer schedule correctness from the website
@@ -230,8 +294,10 @@ where id = 1;
 1. Back up production and verify the current waitlist ordering and unique email
    count.
 2. Review the 464-row snapshot query before applying migration `006`.
-3. Apply migrations `006_founding_offer_infrastructure.sql` and
-   `007_founding_member_sequence_floor.sql` to production.
+3. Apply migrations `006_founding_offer_infrastructure.sql`,
+   `007_founding_member_sequence_floor.sql`, and
+   `008_stripe_webhook_ordering_guard.sql`, then
+   `009_stripe_subscription_generation_guard.sql` to production.
 4. Confirm exactly 464 private eligibility rows and inspect the first and last
    cohort positions.
 5. Create or verify all six live Stripe Prices: two standard, four founding.
